@@ -14,27 +14,21 @@ import Select from '@mui/material/Select';
 const Header = () => {
     const [age, setAge] = useState('');
 
-    const handleChange = (event: SelectChangeEvent) => {
+    const handleChange = (event) => {
         setAge(event.target.value);
     };
 
     return (<>
         <div className="header__container">
             <FormControl sx={{ m: 1, minWidth: 80 }}>
-                <InputLabel id="demo-simple-select-autowidth-label">Age</InputLabel>
-                <Select
-                    labelId="demo-simple-select-autowidth-label"
+                <Select labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
                     value={age}
                     onChange={handleChange}
-                    autoWidth
-                    label="Age">
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Twenty</MenuItem>
-                    <MenuItem value={21}>Twenty one</MenuItem>
-                    <MenuItem value={22}>Twenty one and a half</MenuItem>
+                    autoWidth>
+                    <MenuItem value={0}>Fácil</MenuItem>
+                    <MenuItem value={1}>Médio</MenuItem>
+                    <MenuItem value={2}>Difícil</MenuItem>
                 </Select>
             </FormControl>
         </div>
