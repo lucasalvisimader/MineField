@@ -17,7 +17,11 @@ const Home = () => {
         border: "none",
         "&:hover": {
             opacity: 0.9
-        }
+        },
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            border: "1px solid #484850",
+            borderRadius: "5px 5px 0 0"
+        },
     }
 
     const generateBoard = (level) => {
