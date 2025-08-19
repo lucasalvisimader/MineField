@@ -1,6 +1,7 @@
 :root {
     --background-root: #222831;
     --grey-default: #393E46;
+    --grey-focus: #2b2f35;
     --white-default: #D9D9D9;
     --white-focus: #BEBEBE;
 }

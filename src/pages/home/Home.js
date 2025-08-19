@@ -11,7 +11,7 @@ const Home = () => {
         color: "var(--background-root)",
         bgcolor: "var(--white-default)",
         borderRadius: "10px",
-        width: "20%",
+        width: "30%",
         height: "60%",
         cursor: "pointer",
         border: "none",
@@ -26,12 +26,12 @@ const Home = () => {
         const size = sizes[level];
         const mines = minesCount[level];
 
-        let newBoard = Array(size).fill('-');
+        let newBoard = Array(size).fill('0');
 
         for (let i = 0; i < mines;) {
             const locationMine = Math.floor(Math.random() * size);
-            if (newBoard[locationMine] !== '*') {
-                newBoard[locationMine] = '*';
+            if (newBoard[locationMine] !== '1') {
+                newBoard[locationMine] = '1';
                 i++;
             }
         }
@@ -75,16 +75,21 @@ const Home = () => {
                     <div className="body_board_grid"
                         style={{
                             gridTemplateColumns: `repeat(${getColumns()}, 1fr)`,
+                            gridTemplateRows: `repeat(${getColumns()}, 1fr)`,
                         }}>
-                        {board.map((cell, index) => (
-                            <div key={index} className="body_board_grid_cell"
-                                style={{
-                                    height: ``,
-                                    width: ``,
-                                }}>
-                                {cell === '*' ? '💣' : ''}
-                            </div>
-                        ))}
+                        {board.map((cell, index) => {
+                            const columns = getColumns();
+                            const row = Math.floor(index / columns);
+                            const col = index % columns;
+                            const isEven = (row + col) % 2 === 0;
+
+                            return (
+                                <div key={index}
+                                    className={`body_board_grid_cell ${isEven ? 'even-cell' : 'odd-cell'}`}>
+                                    {cell === '1' ? '💣' : ''}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             }
