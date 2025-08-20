@@ -5,19 +5,10 @@ import { Select, MenuItem } from '@mui/material';
 
 const Home = () => {
     const [board, setBoard] = useState([]);
+    const [revealed, setRevealed] = useState([]);
     const [difficulty, setDifficulty] = useState(0);
 
     const styleSelectDifficulty = {
-        color: "var(--background-root)",
-        bgcolor: "var(--white-default)",
-        borderRadius: "10px",
-        width: "30%",
-        height: "60%",
-        cursor: "pointer",
-        border: "none",
-        "&:hover": {
-            opacity: 0.9
-        },
         "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             border: "1px solid #484850",
             borderRadius: "5px 5px 0 0"
@@ -34,13 +25,45 @@ const Home = () => {
 
         for (let i = 0; i < mines;) {
             const locationMine = Math.floor(Math.random() * size);
-            if (newBoard[locationMine] !== '1') {
-                newBoard[locationMine] = '1';
+            if (newBoard[locationMine] !== '-1') {
+                newBoard[locationMine] = '-1';
                 i++;
             }
         }
 
+        for (let i = 0; i < size; i++) {
+            if (newBoard[i] === '-1') continue;
+
+            const columns = getColumns();
+            const linhaAtual = Math.floor(i / columns);
+            const colunaAtual = i % columns;
+            let countBombs = 0;
+
+            // Olha para os 8 vizinhos
+            for (let linhaOffset = -1; linhaOffset <= 1; linhaOffset++) {
+                for (let colunaOffset = -1; colunaOffset <= 1; colunaOffset++) {
+                    // Ignora a célula atual
+                    if (linhaOffset === 0 && colunaOffset === 0) continue;
+
+                    const novaLinha = linhaAtual + linhaOffset;
+                    const novaColuna = colunaAtual + colunaOffset;
+
+                    // Verifica se está dentro do tabuleiro
+                    if (novaLinha >= 0 && novaLinha < columns && novaColuna >= 0 && novaColuna < columns) {
+                        const indiceVizinho = novaLinha * columns + novaColuna;
+                        if (newBoard[indiceVizinho] === '-1') {
+                            countBombs++;
+                        }
+                    }
+                }
+            }
+            newBoard[i] = countBombs === 0 ? "" : countBombs.toString();
+        }
         setBoard(newBoard);
+    }
+
+    const getColumns = () => {
+        return [8, 12, 16][difficulty];
     }
 
     const handleChange = (event) => {
@@ -48,12 +71,21 @@ const Home = () => {
         setDifficulty(newDifficulty);
     }
 
-    const getColumns = () => {
-        return [8, 12, 16][difficulty];
+    const handleClick = (index) => {
+        if (revealed[index]) return;
+
+        if (board[index] !== '') {
+            setRevealed(prev => {
+                const newRevealed = [...prev];
+                newRevealed[index] = true;
+                return newRevealed;
+            });
+        }
     }
 
     useEffect(() => {
         generateBoard(difficulty);
+        setRevealed(Array(board.length).fill(false))
     }, [difficulty]);
 
     return (
@@ -88,9 +120,8 @@ const Home = () => {
                             const isEven = (row + col) % 2 === 0;
 
                             return (
-                                <div key={index}
-                                    className={`body_board_grid_cell ${isEven ? 'even-cell' : 'odd-cell'}`}>
-                                    {cell === '1' ? '💣' : ''}
+                                <div key={index} className={`body_board_grid_cell ${isEven ? 'even-cell' : 'odd-cell'}`} onClick={() => handleClick(index)}>
+                                    {revealed[index] ? (cell === '-1' ? '💣' : cell) : ''}
                                 </div>
                             );
                         })}

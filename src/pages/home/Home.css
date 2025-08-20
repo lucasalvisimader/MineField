@@ -26,6 +26,20 @@
     padding-left: 40px;
 }
 
+.header_select_difficulty {
+    color: var(--background-root);
+    background-color: var(--white-default);
+    border-radius: 10px;
+    width: 30%;
+    height: 60%;
+    cursor: pointer;
+    border: none;
+}
+
+.header_select_difficulty:hover {
+    opacity: 0.9;
+}
+
 .header_flag_and_time {
     display: flex;
     align-items: center;
