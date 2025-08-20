@@ -57,7 +57,7 @@ const Home = () => {
                     }
                 }
             }
-            newBoard[i] = countBombs === 0 ? "" : countBombs.toString();
+            newBoard[i] = countBombs === 0 ? '' : countBombs.toString();
         }
         setBoard(newBoard);
     }
@@ -72,15 +72,65 @@ const Home = () => {
     }
 
     const handleClick = (index) => {
+        // Ignora células já reveladas
         if (revealed[index]) return;
 
-        if (board[index] !== '') {
+        const columns = getColumns();
+        const isBomb = board[index] === '-1';
+        const isEmptyCell = board[index] !== '';
+
+        if (isBomb || isEmptyCell) {
             setRevealed(prev => {
                 const newRevealed = [...prev];
                 newRevealed[index] = true;
                 return newRevealed;
             });
+            return
         }
+
+        const cellsToProcess = [index]; // Fila de processamento
+        const updatedRevealed = [...revealed];
+
+        while (cellsToProcess.length > 0) {
+            const currentIndex = cellsToProcess.shift();
+            // Pula células já processadas
+            if (updatedRevealed[currentIndex]) continue;
+            // Revela célula atual
+            updatedRevealed[currentIndex] = true;
+            const currentRow = Math.floor(currentIndex / columns);
+            const currentCol = currentIndex % columns;
+
+            // Direções cardinais
+            const cardinalDirections = [
+                { rowDelta: -1, colDelta: 0 }, // Norte
+                { rowDelta: 1, colDelta: 0 },  // Sul
+                { rowDelta: 0, colDelta: -1 }, // Oeste
+                { rowDelta: 0, colDelta: 1 }   // Leste
+            ];
+
+            // Processa cada direção
+            for (const direction of cardinalDirections) {
+                const neighborRow = currentRow + direction.rowDelta;
+                const neighborCol = currentCol + direction.colDelta;
+                // Verifica se está dentro do tabuleiro
+                const isValidPosition =
+                    neighborRow >= 0 &&
+                    neighborRow < columns &&
+                    neighborCol >= 0 &&
+                    neighborCol < columns;
+
+                if (isValidPosition) {
+                    const neighborIndex = neighborRow * columns + neighborCol;
+                    // Processa apenas células vazias não reveladas
+                    const isNeighborEmpty = board[neighborIndex] === '';
+                    const isNeighborHidden = !updatedRevealed[neighborIndex];
+                    if (isNeighborEmpty && isNeighborHidden) {
+                        cellsToProcess.push(neighborIndex);
+                    }
+                }
+            }
+        }
+        setRevealed(updatedRevealed);
     }
 
     useEffect(() => {
@@ -120,7 +170,7 @@ const Home = () => {
                             const isEven = (row + col) % 2 === 0;
 
                             return (
-                                <div key={index} className={`body_board_grid_cell ${isEven ? 'even-cell' : 'odd-cell'}`} onClick={() => handleClick(index)}>
+                                <div key={index} className={`body_board_grid_cell ${isEven ? 'even-cell' : 'odd-cell'}${revealed[index] ? '-revealed' : ''}`} onClick={() => handleClick(index)}>
                                     {revealed[index] ? (cell === '-1' ? '💣' : cell) : ''}
                                 </div>
                             );

@@ -82,10 +82,26 @@
     background-color: var(--grey-default);
 }
 
-.body_board_grid_cell:hover:not(.odd-cell) {
+.even-cell-revealed {
+    background-color: var(--green-default);
+}
+
+.odd-cell-revealed {
+    background-color: var(--blue-default);
+}
+
+.body_board_grid_cell:hover.even-cell {
     background-color: var(--white-focus);
 }
 
 .body_board_grid_cell:hover.odd-cell {
     background-color: var(--grey-focus);
+}
+
+.body_board_grid_cell:hover.even-cell-revealed {
+    background-color: var(--green-focus);
+}
+
+.body_board_grid_cell:hover.odd-cell-revealed {
+    background-color: var(--blue-focus);
 }
