@@ -76,6 +76,7 @@
     cursor: pointer;
     user-select: none;
     background-color: var(--white-default);
+    color: var(--black-default);
 }
 
 .odd-cell {
@@ -83,11 +84,13 @@
 }
 
 .even-cell-revealed {
+    color: var(--white-default);
     background-color: var(--green-default);
 }
 
 .odd-cell-revealed {
     background-color: var(--blue-default);
+    color: var(--white-default);
 }
 
 .body_board_grid_cell:hover.even-cell {
