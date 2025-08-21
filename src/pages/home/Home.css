@@ -9,7 +9,7 @@
 
 .header_container {
     background-color: var(--grey-default);
-    width: 80%;
+    width: 800px;
     height: 7%;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -30,7 +30,7 @@
     color: var(--background-root);
     background-color: var(--white-default);
     border-radius: 10px;
-    width: 30%;
+    width: 40%;
     height: 60%;
     cursor: pointer;
     border: none;
@@ -42,15 +42,29 @@
 
 .header_flag_and_time {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
     width: 50%;
     height: 70%;
     padding-right: 40px;
+    gap: 40px;
+    color: var(--white-default);
+    font-size: 22px;
+}
+
+.header_flag, .header_timer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.header_image {
+    width: 30px;
 }
 
 .body_container {
-    width: 80%;
-    height: 84.3%;
+    width: 800px;
+    height: 800px;
     display: flex;
     justify-content: center;
     border-bottom-left-radius: 20px;
@@ -72,7 +86,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
+    font-size: 20px;
     cursor: pointer;
     user-select: none;
     background-color: var(--white-default);
