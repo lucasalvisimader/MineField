@@ -16,6 +16,7 @@ const Home = () => {
     const [difficulty, setDifficulty] = useState(0);
     const [board, setBoard] = useState([]);
     const [revealed, setRevealed] = useState([]);
+    const [amountFlags, setAmountFlags] = useState(0);
     const [isBoardGenerated, setIsBoardGenerated] = useState(false);
 
     // Estilo do Select (MUI)
@@ -157,39 +158,44 @@ const Home = () => {
     }, []);
 
     // Manipula clique em uma célula
-    const handleClick = useCallback((index) => {
+    const handleClick = useCallback((e, index) => {
         if (revealed[index]) return; // Já revelada
 
-        // Clique em jogo já iniciado
-        const columns = getBoardSize();
-        const isBomb = board[index] === '-1';
-        const isEmpty = board[index] === '';
+        if (e.type === 'click') {
 
-        if (!isBoardGenerated) {
-            // Primeiro clique: gera o tabuleiro com área segura
-            const newBoard = generateBoard(difficulty, index);
-            setBoard(newBoard);
-            setIsBoardGenerated(true);
+            // Clique em jogo já iniciado
+            const columns = getBoardSize();
+            const isBomb = board[index] === '-1';
+            const isEmpty = board[index] === '';
 
-            // Revela automaticamente células vazias conectadas
-            const updatedRevealed = floodFill(index, isEmpty, newBoard, columns, Array(newBoard.length).fill(false));
+            if (!isBoardGenerated) {
+                // Primeiro clique: gera o tabuleiro com área segura
+                const newBoard = generateBoard(difficulty, index);
+                setBoard(newBoard);
+                setIsBoardGenerated(true);
+
+                // Revela automaticamente células vazias conectadas
+                const updatedRevealed = floodFill(index, isEmpty, newBoard, columns, Array(newBoard.length).fill(false));
+                setRevealed(updatedRevealed);
+                return;
+            }
+
+            if (isBomb) {
+                // Revela célula clicada
+                setRevealed(prev => {
+                    const newRevealed = [...prev];
+                    newRevealed[index] = true;
+                    return newRevealed;
+                });
+                return;
+            }
+
+            // Revela células vazias conectadas (flood fill)
+            const updatedRevealed = floodFill(index, isEmpty, board, columns, revealed);
             setRevealed(updatedRevealed);
-            return;
+        } else if (e.type === 'contextmenu') {
+            console.log("Right Click")
         }
-
-        if (isBomb) {
-            // Revela célula clicada
-            setRevealed(prev => {
-                const newRevealed = [...prev];
-                newRevealed[index] = true;
-                return newRevealed;
-            });
-            return;
-        }
-
-        // Revela células vazias conectadas (flood fill)
-        const updatedRevealed = floodFill(index, isEmpty, board, columns, revealed);
-        setRevealed(updatedRevealed);
     }, [difficulty, isBoardGenerated, board, revealed, generateBoard, floodFill, getBoardSize]);
 
     // Reinicia o tabuleiro ao mudar a dificuldade
@@ -199,7 +205,18 @@ const Home = () => {
         setBoard(Array(totalCells).fill(''));
         setRevealed(Array(totalCells).fill(false));
         setIsBoardGenerated(false);
+        setAmountFlags(DIFFICULTY_CONFIG[difficulty].mines)
     }, [difficulty]);
+
+    useEffect(() => {
+        const handleContextmenu = e => {
+            e.preventDefault()
+        }
+        document.addEventListener('contextmenu', handleContextmenu)
+        return function cleanup() {
+            document.removeEventListener('contextmenu', handleContextmenu)
+        }
+    }, [])
 
     return (
         <div className="home_container">
@@ -220,7 +237,7 @@ const Home = () => {
                 <div className="header_flag_and_time">
                     <div className="header_flag">
                         <img className="header_image" src={flag} alt="flag" />
-                        <p>29</p>
+                        <p>{amountFlags}</p>
                     </div>
                     <div className="header_timer">
                         <img className="header_image" src={timer} alt="flag" />
@@ -246,7 +263,7 @@ const Home = () => {
                             return (
                                 <div key={index}
                                     className={`body_board_grid_cell ${isEven ? 'even-cell' : 'odd-cell'}${isRevealed ? '-revealed' : ''}`}
-                                    onClick={() => handleClick(index)}>
+                                    onClick={(e) => handleClick(e, index)} onContextMenu={(e) => handleClick(e, index)}>
                                     {isRevealed ? (cell === '-1' ? '💣' : cell) : ''}
                                 </div>
                             );
